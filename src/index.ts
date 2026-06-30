@@ -30,7 +30,28 @@ const app = express();
 app.set("trust proxy", 1);
 
 /* ────────────── Middleware Inti ────────────── */
-app.use(cors());
+
+/**
+ * Middleware CORS (Cross-Origin Resource Sharing) — Keamanan Akses API.
+ *
+ * Middleware ini bertugas membatasi hak akses API agar hanya dapat diakses
+ * oleh domain frontend resmi yang telah terdaftar. Di lingkungan produksi,
+ * nilai `CORS_ORIGIN` wajib diisi dengan domain resmi (misalnya:
+ * https://www.testdomain.id/) untuk mencegah permintaan dari
+ * sumber yang tidak sah. Di lingkungan development lokal, jika variabel
+ * tersebut kosong atau tidak didefinisikan, akses dari semua origin (*)
+ * diizinkan secara sementara agar proses pengembangan tidak terhambat.
+ */
+const allowedOrigin = process.env.CORS_ORIGIN?.trim() || "*";
+app.use(
+  cors({
+    origin: allowedOrigin,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "x-api-secret-key"],
+  })
+);
+
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
 

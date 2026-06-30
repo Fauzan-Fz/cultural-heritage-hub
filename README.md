@@ -24,7 +24,7 @@ AI_MODEL_NAME=openai/gpt-oss-120b:free
 
 # Rate limiting configuration
 RATE_LIMIT_WINDOW_MS=60000
-RATE_LIMIT_MAX=15
+RATE_LIMIT_MAX=10
 
 # Security and Documentation
 APP_DEMO_AUTH_SECRET=your_secret_key
