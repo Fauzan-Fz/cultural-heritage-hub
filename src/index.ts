@@ -107,23 +107,51 @@ app.use((err: unknown, _req: Request, res: Response, _next: express.NextFunction
 const PORT = Number.parseInt(process.env.PORT ?? "5000", 10) || 5000;
 
 const server = app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
-  console.log("─".repeat(64));
-  console.log(`🏛️  Cultural Heritage Hub backend running`);
-  console.log(`   Port:           ${PORT}`);
-  console.log(`   NODE_ENV:       ${process.env.NODE_ENV ?? "(unset)"}`);
-  console.log(`   Model:          ${getModelName()}`);
-  console.log(`   API key set:    ${hasApiKey() ? "yes" : "NO ⚠️"}`);
-  console.log(
-    `   Static auth:    ${process.env.APP_DEMO_AUTH_SECRET?.trim() ? "enabled" : "bypassed (local dev)"}`,
-  );
-  console.log(
-    `   Rate limit:     ${RATE_LIMIT_MAX} req / ${Math.ceil(RATE_LIMIT_WINDOW_MS / 1000)}s per IP`,
-  );
-  console.log(`   Health:         http://localhost:${PORT}/healthz`);
-  console.log(`   Welcome:        http://localhost:${PORT}/api/v1/welcome`);
-  console.log(`   Chat:           POST  http://localhost:${PORT}/api/v1/chat`);
-  console.log("─".repeat(64));
+  const isProd = process.env.NODE_ENV === "production";
+
+  if (isProd) {
+    /**
+     * Mode produksi: hanya cetak satu baris ringkas agar tidak mengotori
+     * mesin logging cloud (Render, Railway, dsb.) dengan output yang panjang.
+     */
+    // eslint-disable-next-line no-console
+    console.log(`🏛️  Cultural Heritage Hub running on port ${PORT}`);
+  } else {
+    /**
+     * Mode development: tampilkan kotak ASCII verbose lengkap dengan daftar
+     * URL lokal untuk kemudahan pengujian di mesin pengembang.
+     */
+    // eslint-disable-next-line no-console
+    console.log("─".repeat(64));
+    // eslint-disable-next-line no-console
+    console.log(`🏛️  Cultural Heritage Hub backend running`);
+    // eslint-disable-next-line no-console
+    console.log(`   Port:           ${PORT}`);
+    // eslint-disable-next-line no-console
+    console.log(`   NODE_ENV:       ${process.env.NODE_ENV ?? "(unset)"}`);
+    // eslint-disable-next-line no-console
+    console.log(`   Model:          ${getModelName()}`);
+    // eslint-disable-next-line no-console
+    console.log(`   API key set:    ${hasApiKey() ? "yes" : "NO ⚠️"}`);
+    // eslint-disable-next-line no-console
+    console.log(
+      `   Static auth:    ${process.env.APP_DEMO_AUTH_SECRET?.trim() ? "enabled" : "bypassed (local dev)"}`,
+    );
+    // eslint-disable-next-line no-console
+    console.log(
+      `   Rate limit:     ${RATE_LIMIT_MAX} req / ${Math.ceil(RATE_LIMIT_WINDOW_MS / 1000)}s per IP`,
+    );
+    // eslint-disable-next-line no-console
+    console.log(`   Health:         http://localhost:${PORT}/healthz`);
+    // eslint-disable-next-line no-console
+    console.log(`   Docs API:       http://localhost:${PORT}/docs`);
+    // eslint-disable-next-line no-console
+    console.log(`   Welcome:        http://localhost:${PORT}/api/v1/welcome`);
+    // eslint-disable-next-line no-console
+    console.log(`   Chat:           POST  http://localhost:${PORT}/api/v1/chat`);
+    // eslint-disable-next-line no-console
+    console.log("─".repeat(64));
+  }
 });
 
 /**

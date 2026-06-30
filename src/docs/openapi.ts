@@ -1,3 +1,28 @@
+/**
+ * Spesifikasi OpenAPI 3.0.0 — Cultural Heritage Hub API.
+ *
+ * Array `servers` dikonfigurasi secara dinamis berdasarkan variabel lingkungan:
+ * - Produksi : mengarah ke domain frontend resmi (https://www.bukittinggiheritage.id/)
+ *   sehingga Scalar UI menampilkan URL yang benar saat diakses oleh pengguna akhir.
+ * - Development: mengarah ke alamat localhost dengan port aktif dari konfigurasi `.env`
+ *   agar pengembang dapat menguji endpoint langsung dari mesin lokal.
+ */
+
+const isProd = process.env.NODE_ENV === "production";
+const port = process.env.PORT ?? "5000";
+
+/**
+ * Menentukan URL server utama secara dinamis sesuai lingkungan aktif.
+ * Produksi → domain resmi. Development → localhost dengan port aktif.
+ */
+const serverUrl = isProd
+  ? "https://www.bukittinggiheritage.id/"
+  : `http://localhost:${port}`;
+
+const serverDescription = isProd
+  ? "Production — Domain Resmi Cultural Heritage Hub"
+  : `Development — Lokal (port ${port})`;
+
 export const openApiSpecObject = {
   openapi: "3.0.0",
   info: {
@@ -7,8 +32,8 @@ export const openApiSpecObject = {
   },
   servers: [
     {
-      url: "/",
-      description: "Current environment",
+      url: serverUrl,
+      description: serverDescription,
     },
   ],
   components: {
