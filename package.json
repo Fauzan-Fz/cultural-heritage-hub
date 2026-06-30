@@ -1,0 +1,43 @@
+{
+  "name": "cultural-heritage-backend",
+  "version": "1.0.0",
+  "description": "Stateless Express + TypeScript backend powering Cakra, the Digital Cultural Curator for the Cultural Heritage Hub (Bukittinggi/Minangkabau & Bali).",
+  "type": "module",
+  "main": "dist/index.js",
+  "engines": {
+    "node": ">=18.18.0"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "keywords": [
+    "express",
+    "typescript",
+    "openrouter",
+    "cultural-heritage",
+    "bukittinggi",
+    "bali",
+    "minangkabau",
+    "stateless",
+    "cakra"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@scalar/express-api-reference": "^0.10.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.10.5",
+    "tsx": "^4.22.4",
+    "typescript": "^5.8.3"
+  }
+}
