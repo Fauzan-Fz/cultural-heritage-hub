@@ -4,6 +4,10 @@ export interface TimelineStory {
   era: string;
   imagePath: string;
   alt: string;
+  description: string;
+  quote?: string;
+  width: number;
+  height: number;
 }
 
 export interface SiteContent {

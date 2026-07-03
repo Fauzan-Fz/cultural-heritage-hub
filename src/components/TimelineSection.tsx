@@ -9,7 +9,7 @@ export function TimelineSection() {
   return (
     <section
       ref={ref}
-      className="relative bg-[#fbf8ef] pb-28 pt-10 md:pb-36 md:pt-14"
+      className="relative bg-white pb-28 pt-10 md:pb-36 md:pt-14"
       aria-labelledby="timeline-heading"
     >
       <div className="relative mx-auto w-full max-w-[1512px] px-6">
@@ -32,22 +32,16 @@ export function TimelineSection() {
         </header>
       </div>
 
-      <div className="relative mx-auto w-full max-w-6xl px-4">
-        <div
-          className="pointer-events-none w-[1px] bg-[#8C1D24]/30 absolute left-1/2 transform -translate-x-1/2 z-10 top-0 bottom-0"
-          aria-hidden="true"
-        />
-
-        <div className="relative z-20 flex flex-col">
-          {culturalStories.map((story, index) => (
-            <CinematicImage
-              key={story.id}
-              src={story.imagePath}
-              alt={story.alt}
-              index={index}
-            />
-          ))}
-        </div>
+      <div className="relative z-20 flex flex-col w-full">
+        {culturalStories.map((story, index) => (
+          <CinematicImage
+            key={story.id}
+            story={story}
+            index={index}
+            totalItems={culturalStories.length}
+            progress={1}
+          />
+        ))}
       </div>
     </section>
   );
