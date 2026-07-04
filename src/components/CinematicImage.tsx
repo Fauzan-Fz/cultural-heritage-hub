@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useEffect, useState, useRef, type CSSProperties } from 'react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import type { TimelineStory } from '../types';
 
@@ -19,11 +19,33 @@ export function CinematicImage({ story, index, totalItems, progress }: Cinematic
   const threshold = totalItems > 1 ? index / (totalItems - 1) : 0;
   const isActivated = progress >= threshold;
 
-  // Desktop also uses sticky state so images don't disappear on scroll-up
+  // Desktop image reveal: once visible, always visible (one-shot)
   const [hasBeenVisible, setHasBeenVisible] = useState(false);
   useEffect(() => {
     if (isVisible && !hasBeenVisible) setHasBeenVisible(true);
   }, [isVisible, hasBeenVisible]);
+
+  // Desktop card reveal: latch TRUE the first time isActivated becomes true.
+  // After that, the card stays visible even when scrolling back up.
+  const [cardLatched, setCardLatched] = useState(false);
+  const hasScrolledRef = useRef(false);
+
+  useEffect(() => {
+    // Only trigger on the first downward scroll event
+    const onFirstScroll = () => {
+      hasScrolledRef.current = true;
+      window.removeEventListener('scroll', onFirstScroll);
+    };
+    window.addEventListener('scroll', onFirstScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onFirstScroll);
+  }, []);
+
+  useEffect(() => {
+    // Latch permanently once activated AND the user has scrolled
+    if (!cardLatched && isActivated && hasScrolledRef.current) {
+      setCardLatched(true);
+    }
+  }, [isActivated, cardLatched]);
 
   // Ease-in-out multi-stop gradient — much smoother than linear.
   // Only applies on DESKTOP where images overlap each other.
@@ -60,13 +82,23 @@ export function CinematicImage({ story, index, totalItems, progress }: Cinematic
     transition: 'opacity 800ms cubic-bezier(0.16, 1, 0.3, 1), transform 800ms cubic-bezier(0.16, 1, 0.3, 1)',
   };
 
-  // Shared card style — pure glass, no color tint
+  // Desktop card style — semi-opaque warm dark glass so text is always legible
+  // over the cinematic (dark) image beneath.
   const cardStyle: CSSProperties = {
-    background: 'rgba(255,255,255,0.12)',
-    backdropFilter: 'blur(32px)',
-    WebkitBackdropFilter: 'blur(32px)',
-    border: '1px solid rgba(255,255,255,0.22)',
-    boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
+    background: 'rgba(20, 10, 10, 0.72)',
+    backdropFilter: 'blur(28px)',
+    WebkitBackdropFilter: 'blur(28px)',
+    border: '1px solid rgba(255,255,255,0.13)',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.35)',
+  };
+
+  // Mobile card style — lighter glass (sits over white/light bg)
+  const mobileCardStyle: CSSProperties = {
+    background: 'rgba(255,255,255,0.80)',
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    border: '1px solid rgba(110,31,31,0.12)',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.10)',
   };
 
   return (
@@ -124,7 +156,7 @@ export function CinematicImage({ story, index, totalItems, progress }: Cinematic
           }}
         />
 
-        {/* Desktop Info Card */}
+        {/* Desktop Info Card — uses cardLatched so it never disappears on scroll-up */}
         <div
           className={`absolute z-40 pointer-events-auto top-1/2
             ${isEven
@@ -133,13 +165,13 @@ export function CinematicImage({ story, index, totalItems, progress }: Cinematic
             }
           `}
           style={{
-            opacity: isActivated ? 1 : 0,
-            transform: isActivated
+            opacity: cardLatched ? 1 : 0,
+            transform: cardLatched
               ? 'translateY(-50%) translateX(0px)'
               : isEven
                 ? 'translateY(-50%) translateX(16px)'
                 : 'translateY(-50%) translateX(-16px)',
-            transition: isActivated
+            transition: cardLatched
               ? 'opacity 600ms ease, transform 800ms cubic-bezier(0.16, 1, 0.3, 1)'
               : 'opacity 200ms ease, transform 300ms ease',
           }}
@@ -148,14 +180,19 @@ export function CinematicImage({ story, index, totalItems, progress }: Cinematic
             className="rounded-[20px] p-5 md:p-6"
             style={cardStyle}
           >
-            <h3 className="font-cormorant text-[17px] sm:text-[20px] md:text-[23px] font-bold text-[#6E1F1F] leading-snug mb-3">
+            {/* Title — warm cream so it pops on the dark card */}
+            <h3 className="font-cormorant text-[17px] sm:text-[20px] md:text-[23px] font-bold leading-snug mb-3"
+              style={{ color: '#F5C9A0' }}>
               {story.title}
             </h3>
-            <p className="font-poppins text-[12.5px] sm:text-[13px] leading-[1.85] text-neutral-800">
+            {/* Body text — soft white for legibility on dark glass */}
+            <p className="font-poppins text-[12.5px] sm:text-[13px] leading-[1.85]"
+              style={{ color: 'rgba(245,235,220,0.90)' }}>
               {story.description}
             </p>
             {story.quote && (
-              <blockquote className="mt-4 pr-4 border-r-2 border-[#6E1F1F]/60 font-poppins text-[12px] leading-relaxed text-[#6E1F1F]/90 italic font-medium text-right">
+              <blockquote className="mt-4 pr-4 border-r-2 border-[#F5C9A0]/50 font-poppins text-[12px] leading-relaxed italic font-medium text-right"
+                style={{ color: 'rgba(245,201,160,0.85)' }}>
                 {story.quote}
               </blockquote>
             )}
@@ -253,16 +290,18 @@ export function CinematicImage({ story, index, totalItems, progress }: Cinematic
         >
           <div
             className="rounded-[20px] p-5"
-            style={cardStyle}
+            style={mobileCardStyle}
           >
+            {/* Mobile title — keep rich burgundy on light card */}
             <h3 className="font-cormorant text-[20px] font-bold text-[#6E1F1F] leading-snug mb-3">
               {story.title}
             </h3>
-            <p className="font-poppins text-[13px] leading-[1.85] text-neutral-800">
+            {/* Mobile body — dark neutral, readable on white glass */}
+            <p className="font-poppins text-[13px] leading-[1.85] text-neutral-700">
               {story.description}
             </p>
             {story.quote && (
-              <blockquote className="mt-4 pr-4 border-r-2 border-[#6E1F1F]/60 font-poppins text-[12px] leading-relaxed text-[#6E1F1F]/90 italic font-medium text-right">
+              <blockquote className="mt-4 pr-4 border-r-2 border-[#6E1F1F]/60 font-poppins text-[12px] leading-relaxed text-[#6E1F1F]/85 italic font-medium text-right">
                 {story.quote}
               </blockquote>
             )}
