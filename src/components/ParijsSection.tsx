@@ -1,8 +1,17 @@
+import { useEffect, useRef, useState } from 'react';
 import videoSrc from '../assets/Bukittinggi 4K.mp4';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 
 export function ParijsSection() {
   const { ref, isVisible } = useScrollReveal<HTMLElement>();
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (isVisible) {
+      setShouldLoadVideo(true);
+    }
+  }, [isVisible]);
 
   return (
     <section
@@ -12,19 +21,24 @@ export function ParijsSection() {
       aria-label="Parijs Van Sumatra Section"
     >
       {/* Background Video — tilted for cinematic effect, scaled to avoid black edges */}
-      <video
-        src={videoSrc}
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
-        style={{
-          transform: 'rotate(-6deg) scale(1.18)',
-          objectPosition: 'center center',
-          transformOrigin: 'center center',
-        }}
-      />
+      {shouldLoadVideo ? (
+        <video
+          ref={videoRef}
+          src={videoSrc}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
+          style={{
+            transform: 'rotate(-6deg) scale(1.18)',
+            objectPosition: 'center center',
+            transformOrigin: 'center center',
+          }}
+        />
+      ) : (
+        <div className="absolute inset-0 bg-neutral-950" />
+      )}
 
       {/* Cinematic Overlays - lighter and brighter to let the video shine through */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/30 to-black/20 z-10" />

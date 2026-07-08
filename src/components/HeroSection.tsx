@@ -32,6 +32,7 @@ export function HeroSection() {
           alt="Pemandangan pegunungan Bukittinggi saat fajar"
           className="absolute inset-0 h-full w-full object-cover"
           fetchPriority="high"
+          decoding="sync"
         />
       </div>
 

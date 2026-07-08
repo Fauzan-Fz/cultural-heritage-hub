@@ -1,10 +1,12 @@
 import { useEffect } from 'react';
 import logoSvg from '../assets/logo.svg';
 
+type Page = 'home' | 'history' | 'budaya';
+
 interface MenuOverlayProps {
   onClose: () => void;
-  onNavigate: (page: 'home' | 'history') => void;
-  currentPage: 'home' | 'history';
+  onNavigate: (page: Page) => void;
+  currentPage: Page;
 }
 
 export function MenuOverlay({ onClose, onNavigate, currentPage }: MenuOverlayProps) {
@@ -55,7 +57,7 @@ export function MenuOverlay({ onClose, onNavigate, currentPage }: MenuOverlayPro
 
       {/* Menu items container */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
-        <nav className="flex flex-col gap-10 md:gap-14" aria-label="Menu navigasi overlay">
+        <nav className="flex flex-col gap-8 md:gap-11" aria-label="Menu navigasi overlay">
           {/* Link 1: Beranda */}
           <button
             onClick={() => onNavigate('home')}
@@ -89,6 +91,24 @@ export function MenuOverlay({ onClose, onNavigate, currentPage }: MenuOverlayPro
             </span>
             <span className={`mt-3 h-[2px] bg-[#6E1F1F] transition-all duration-500 ${
               currentPage === 'history' ? 'w-12' : 'w-0 group-hover:w-8'
+            }`} />
+          </button>
+
+          {/* Link 3: Budaya */}
+          <button
+            onClick={() => onNavigate('budaya')}
+            className="group flex flex-col items-center focus:outline-none cursor-pointer"
+          >
+            <span className={`font-cormorant text-[36px] md:text-[52px] font-bold tracking-[0.2em] transition-all duration-500 group-hover:scale-105 ${
+              currentPage === 'budaya' ? 'text-[#6E1F1F]' : 'text-[#6E1F1F]/60'
+            }`}>
+              BUDAYA
+            </span>
+            <span className="font-poppins mt-2 text-[12px] md:text-[14px] font-normal tracking-wider text-neutral-500 uppercase transition-all duration-500 group-hover:text-[#6E1F1F]/80">
+              Warisan Budaya Minangkabau
+            </span>
+            <span className={`mt-3 h-[2px] bg-[#6E1F1F] transition-all duration-500 ${
+              currentPage === 'budaya' ? 'w-12' : 'w-0 group-hover:w-8'
             }`} />
           </button>
         </nav>

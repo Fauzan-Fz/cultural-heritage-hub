@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, type CSSProperties } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import type { TimelineStory } from '../types';
 
@@ -19,33 +19,11 @@ export function CinematicImage({ story, index, totalItems, progress }: Cinematic
   const threshold = totalItems > 1 ? index / (totalItems - 1) : 0;
   const isActivated = progress >= threshold;
 
-  // Desktop image reveal: once visible, always visible (one-shot)
+  // Desktop image reveal: once visible, stays visible (one-shot for the image pan)
   const [hasBeenVisible, setHasBeenVisible] = useState(false);
   useEffect(() => {
     if (isVisible && !hasBeenVisible) setHasBeenVisible(true);
   }, [isVisible, hasBeenVisible]);
-
-  // Desktop card reveal: latch TRUE the first time isActivated becomes true.
-  // After that, the card stays visible even when scrolling back up.
-  const [cardLatched, setCardLatched] = useState(false);
-  const hasScrolledRef = useRef(false);
-
-  useEffect(() => {
-    // Only trigger on the first downward scroll event
-    const onFirstScroll = () => {
-      hasScrolledRef.current = true;
-      window.removeEventListener('scroll', onFirstScroll);
-    };
-    window.addEventListener('scroll', onFirstScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onFirstScroll);
-  }, []);
-
-  useEffect(() => {
-    // Latch permanently once activated AND the user has scrolled
-    if (!cardLatched && isActivated && hasScrolledRef.current) {
-      setCardLatched(true);
-    }
-  }, [isActivated, cardLatched]);
 
   // Ease-in-out multi-stop gradient — much smoother than linear.
   // Only applies on DESKTOP where images overlap each other.
@@ -75,30 +53,22 @@ export function CinematicImage({ story, index, totalItems, progress }: Cinematic
   };
 
   // Mobile: animate when progress line reaches/leaves this item (bidirectional)
-  // Item appears when line reaches dot, disappears when line retreats past it
   const mobileRevealStyle = {
     opacity: isActivated ? 1 : 0,
     transform: isActivated ? 'translateY(0px)' : 'translateY(32px)',
     transition: 'opacity 800ms cubic-bezier(0.16, 1, 0.3, 1), transform 800ms cubic-bezier(0.16, 1, 0.3, 1)',
   };
 
-  // Desktop card style — semi-opaque warm dark glass so text is always legible
-  // over the cinematic (dark) image beneath.
+  // ─── Card style: matches reference design ───────────────────────────────────
+  // Almost no background color — ultra-thin frosted glass, translucent white.
+  // Text is dark so it reads clearly against the landscape image behind.
   const cardStyle: CSSProperties = {
-    background: 'rgba(20, 10, 10, 0.72)',
-    backdropFilter: 'blur(28px)',
-    WebkitBackdropFilter: 'blur(28px)',
-    border: '1px solid rgba(255,255,255,0.13)',
-    boxShadow: '0 8px 32px rgba(0,0,0,0.35)',
-  };
-
-  // Mobile card style — lighter glass (sits over white/light bg)
-  const mobileCardStyle: CSSProperties = {
-    background: 'rgba(255,255,255,0.80)',
-    backdropFilter: 'blur(20px)',
-    WebkitBackdropFilter: 'blur(20px)',
-    border: '1px solid rgba(110,31,31,0.12)',
-    boxShadow: '0 4px 20px rgba(0,0,0,0.10)',
+    background: 'rgba(255, 255, 255, 0.38)',
+    backdropFilter: 'blur(14px)',
+    WebkitBackdropFilter: 'blur(14px)',
+    border: '1px solid rgba(255, 255, 255, 0.55)',
+    borderRadius: '16px',
+    boxShadow: '0 2px 16px rgba(0, 0, 0, 0.08)',
   };
 
   return (
@@ -108,7 +78,7 @@ export function CinematicImage({ story, index, totalItems, progress }: Cinematic
     >
 
       {/* ══════════════════════════════════════════════
-          DESKTOP LAYOUT (md+): unchanged cinematic overlap
+          DESKTOP LAYOUT (md+): cinematic overlap
       ══════════════════════════════════════════════ */}
       <div
         className="hidden md:block w-full"
@@ -152,11 +122,11 @@ export function CinematicImage({ story, index, totalItems, progress }: Cinematic
             transformOrigin: isEven ? 'left' : 'right',
             transition: isActivated
               ? 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, opacity 0.3s ease 0.1s'
-              : 'width 0.2s ease, opacity 0.2s ease',
+              : 'width 0.25s ease, opacity 0.25s ease',
           }}
         />
 
-        {/* Desktop Info Card — uses cardLatched so it never disappears on scroll-up */}
+        {/* Desktop Info Card — bidirectional: visible when isActivated, hidden when not */}
         <div
           className={`absolute z-40 pointer-events-auto top-1/2
             ${isEven
@@ -165,34 +135,28 @@ export function CinematicImage({ story, index, totalItems, progress }: Cinematic
             }
           `}
           style={{
-            opacity: cardLatched ? 1 : 0,
-            transform: cardLatched
+            opacity: isActivated ? 1 : 0,
+            transform: isActivated
               ? 'translateY(-50%) translateX(0px)'
               : isEven
-                ? 'translateY(-50%) translateX(16px)'
-                : 'translateY(-50%) translateX(-16px)',
-            transition: cardLatched
-              ? 'opacity 600ms ease, transform 800ms cubic-bezier(0.16, 1, 0.3, 1)'
-              : 'opacity 200ms ease, transform 300ms ease',
+                ? 'translateY(-50%) translateX(18px)'
+                : 'translateY(-50%) translateX(-18px)',
+            transition: isActivated
+              ? 'opacity 600ms ease 0.05s, transform 800ms cubic-bezier(0.16, 1, 0.3, 1) 0.05s'
+              : 'opacity 300ms ease, transform 400ms ease',
           }}
         >
-          <div
-            className="rounded-[20px] p-5 md:p-6"
-            style={cardStyle}
-          >
-            {/* Title — warm cream so it pops on the dark card */}
-            <h3 className="font-cormorant text-[17px] sm:text-[20px] md:text-[23px] font-bold leading-snug mb-3"
-              style={{ color: '#F5C9A0' }}>
+          <div style={cardStyle} className="p-5 md:p-6">
+            {/* Title — rich burgundy, reads well on translucent card over nature image */}
+            <h3 className="font-cormorant text-[17px] sm:text-[20px] md:text-[23px] font-bold leading-snug mb-3 text-[#5C1A1A]">
               {story.title}
             </h3>
-            {/* Body text — soft white for legibility on dark glass */}
-            <p className="font-poppins text-[12.5px] sm:text-[13px] leading-[1.85]"
-              style={{ color: 'rgba(245,235,220,0.90)' }}>
+            {/* Body — deep neutral, high contrast on almost-clear glass */}
+            <p className="font-poppins text-[12.5px] sm:text-[13px] leading-[1.85] text-[#1a1210]">
               {story.description}
             </p>
             {story.quote && (
-              <blockquote className="mt-4 pr-4 border-r-2 border-[#F5C9A0]/50 font-poppins text-[12px] leading-relaxed italic font-medium text-right"
-                style={{ color: 'rgba(245,201,160,0.85)' }}>
+              <blockquote className="mt-4 pr-4 border-r-2 border-[#6E1F1F]/50 font-poppins text-[12px] leading-relaxed text-[#6E1F1F]/80 italic font-medium text-right">
                 {story.quote}
               </blockquote>
             )}
@@ -223,17 +187,10 @@ export function CinematicImage({ story, index, totalItems, progress }: Cinematic
 
       {/* ══════════════════════════════════════════════
           MOBILE LAYOUT (<md): dot on LEFT axis, image + text on RIGHT
-          Dot is absolutely positioned relative to article, aligning with
-          the timeline line which is at left-[31px] from page edge.
-          Each item animates independently (same scroll-reveal as desktop).
       ══════════════════════════════════════════════ */}
       <div className="flex md:hidden flex-col w-full pb-10">
 
-        {/* Mobile: Dot — absolutely positioned on the left axis */}
-        {/* The timeline line sits at left-[31px] from the page edge.
-            The article has no horizontal padding, so the dot center
-            must also be at 31px from the left edge of the article.
-            Dot is 22px wide → left-[20px] positions its center at 31px. */}
+        {/* Mobile: Dot */}
         <div
           className="timeline-dot md:hidden absolute left-[20px] top-6 z-[32]
             w-[22px] h-[22px] rounded-full border-2 flex items-center justify-center pointer-events-none"
@@ -255,7 +212,7 @@ export function CinematicImage({ story, index, totalItems, progress }: Cinematic
           />
         </div>
 
-        {/* Mobile: Image — indented so it sits to the right of the dot axis */}
+        {/* Mobile: Image */}
         <div
           className="relative w-full pl-[52px] pr-4"
           style={mobileRevealStyle}
@@ -275,12 +232,11 @@ export function CinematicImage({ story, index, totalItems, progress }: Cinematic
                 opacity: isActivated ? 1 : 0,
               }}
             />
-            {/* Subtle gradient overlay at the bottom of image */}
             <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
           </div>
         </div>
 
-        {/* Mobile: Info card — indented same as image, slight delay */}
+        {/* Mobile: Info card */}
         <div
           className="pl-[52px] pr-4 mt-4 pointer-events-auto"
           style={{
@@ -288,20 +244,15 @@ export function CinematicImage({ story, index, totalItems, progress }: Cinematic
             transitionDelay: isActivated ? '80ms' : '0ms',
           }}
         >
-          <div
-            className="rounded-[20px] p-5"
-            style={mobileCardStyle}
-          >
-            {/* Mobile title — keep rich burgundy on light card */}
-            <h3 className="font-cormorant text-[20px] font-bold text-[#6E1F1F] leading-snug mb-3">
+          <div style={cardStyle} className="p-5">
+            <h3 className="font-cormorant text-[20px] font-bold text-[#5C1A1A] leading-snug mb-3">
               {story.title}
             </h3>
-            {/* Mobile body — dark neutral, readable on white glass */}
-            <p className="font-poppins text-[13px] leading-[1.85] text-neutral-700">
+            <p className="font-poppins text-[13px] leading-[1.85] text-[#1a1210]">
               {story.description}
             </p>
             {story.quote && (
-              <blockquote className="mt-4 pr-4 border-r-2 border-[#6E1F1F]/60 font-poppins text-[12px] leading-relaxed text-[#6E1F1F]/85 italic font-medium text-right">
+              <blockquote className="mt-4 pr-4 border-r-2 border-[#6E1F1F]/60 font-poppins text-[12px] leading-relaxed text-[#6E1F1F]/80 italic font-medium text-right">
                 {story.quote}
               </blockquote>
             )}

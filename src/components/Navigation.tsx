@@ -1,25 +1,72 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { siteContent } from '../data/stories';
 import logoSvg from '../assets/logo.svg';
 import { MenuOverlay } from './MenuOverlay';
 
+type Page = 'home' | 'history' | 'budaya';
+
 interface NavigationProps {
-  currentPage: 'home' | 'history';
-  setCurrentPage: (page: 'home' | 'history') => void;
+  currentPage: Page;
+  setCurrentPage: (page: Page) => void;
 }
 
 export function Navigation({ currentPage, setCurrentPage }: NavigationProps) {
   const { nav } = siteContent;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  // ── Scroll-aware navbar ─────────────────────────────────────────────────────
+  // Always visible at the very top of the page.
+  // Hides when user scrolls DOWN past 80px.
+  // Reappears instantly when user scrolls UP (even a little).
+  const [navVisible, setNavVisible] = useState(true);
+  const lastScrollY = useRef(0);
+  const ticking = useRef(false);
+
+  useEffect(() => {
+    const HIDE_THRESHOLD = 80; // px from top before hide kicks in
+
+    const onScroll = () => {
+      if (ticking.current) return;
+      ticking.current = true;
+
+      requestAnimationFrame(() => {
+        const currentY = window.scrollY;
+        const delta = currentY - lastScrollY.current;
+
+        if (currentY <= HIDE_THRESHOLD) {
+          // Always show near the top
+          setNavVisible(true);
+        } else if (delta > 4) {
+          // Scrolling DOWN → hide
+          setNavVisible(false);
+        } else if (delta < -4) {
+          // Scrolling UP → show
+          setNavVisible(true);
+        }
+
+        lastScrollY.current = currentY;
+        ticking.current = false;
+      });
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   // Adapt background container style depending on page (dark vs light theme)
-  const containerStyle = currentPage === 'history'
+  const containerStyle = currentPage === 'history' || currentPage === 'budaya'
     ? 'bg-[#FAF8F5]/70 border-[#6E1F1F]/10 shadow-[0_8px_32px_rgba(110,31,31,0.04)]'
     : 'bg-white/5 border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.02)]';
 
   return (
     <>
-      <header className="pointer-events-none absolute inset-x-0 top-[21px] z-50 flex justify-center px-4">
+      <header
+        className="pointer-events-none fixed inset-x-0 top-[21px] z-50 flex justify-center px-4"
+        style={{
+          transform: navVisible ? 'translateY(0)' : 'translateY(-120%)',
+          transition: 'transform 420ms cubic-bezier(0.32, 0.72, 0, 1)',
+        }}
+      >
         <nav
           className="pointer-events-auto relative flex h-[100px] w-full max-w-[924px] items-start"
           aria-label="Navigasi utama"
@@ -77,5 +124,3 @@ export function Navigation({ currentPage, setCurrentPage }: NavigationProps) {
     </>
   );
 }
-
-
