@@ -8,7 +8,7 @@ interface UseScrollRevealOptions {
 export function useScrollReveal<T extends HTMLElement>(
   options: UseScrollRevealOptions = {},
 ) {
-  const { threshold = 0.05, rootMargin = '0px 0px 0px 0px' } = options;
+  const { threshold = 0.1, rootMargin = '0px 0px -60px 0px' } = options;
   const ref = useRef<T | null>(null);
   const [isVisible, setIsVisible] = useState(() =>
     window.matchMedia('(prefers-reduced-motion: reduce)').matches,

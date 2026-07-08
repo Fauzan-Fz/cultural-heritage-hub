@@ -7,12 +7,12 @@ import { useScrollReveal } from '../hooks/useScrollReveal';
 import budaya4kVideo from '../assets/Budaya 4k.mp4';
 
 // Grid card images — Panduan Budaya section
-import grid1 from '../assets/(1).svg';
-import grid2 from '../assets/(2).svg';
-import grid3 from '../assets/(3).svg';
-import grid4 from '../assets/(4).svg';
-import grid5 from '../assets/(5).svg';
-import grid6 from '../assets/(6).svg';
+import grid1 from '../assets/01.png';
+import grid2 from '../assets/02.png';
+import grid3 from '../assets/03.png';
+import grid4 from '../assets/04.png';
+import grid5 from '../assets/05.png';
+import grid6 from '../assets/06.png';
 
 // Carousel slide images
 import rect2 from "../assets/Rectangle 1385 (2).svg";
@@ -172,6 +172,8 @@ export function BudayaPage() {
 
   // Carousel section element ref (used for wheel-lock boundary detection)
   const containerRef = useRef<HTMLElement>(null);
+  // Video ref for manual loop control (prevents black flash on loop boundary)
+  const videoRef = useRef<HTMLVideoElement>(null);
   // Carousel active progress (continuous value from 0 to 7)
   const [activeProgress, setActiveProgress] = useState(0);
   const activeProgressRef = useRef(0);
@@ -250,12 +252,27 @@ export function BudayaPage() {
         aria-labelledby="budaya-heading"
       >
         <video
+          ref={videoRef}
           src={budaya4kVideo}
           autoPlay
           loop
           muted
           playsInline
+          preload="auto"
           className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+          onTimeUpdate={(e) => {
+            const v = e.currentTarget;
+            // Preemptively loop 0.25 seconds before the video ends to avoid a black flash/gap
+            if (v.duration && v.currentTime >= v.duration - 0.25) {
+              v.currentTime = 0;
+              void v.play().catch(() => {});
+            }
+          }}
+          onEnded={(e) => {
+            const v = e.currentTarget;
+            v.currentTime = 0;
+            void v.play().catch(() => {});
+          }}
         />
         <div className="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-black/60 to-transparent z-10 pointer-events-none" />
         {/* Warm reddish-brown tint matching design reference */}
@@ -271,8 +288,8 @@ export function BudayaPage() {
         />
 
         <div
-          className={`relative z-30 flex flex-col items-center justify-end text-center px-6 pb-20 md:pb-28 transition-all duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
-            heroVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0 blur-sm'
+          className={`relative z-30 flex flex-col items-center justify-end text-center px-6 pb-20 md:pb-28 transition-all duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+            heroVisible ? 'translate-y-0 opacity-100 scale-100 blur-none' : 'translate-y-10 opacity-0 scale-[0.98] blur-[3px]'
           }`}
           style={{ minHeight: '100svh' }}
         >
@@ -321,7 +338,9 @@ export function BudayaPage() {
       >
         <div
           ref={featureRef}
-          className="w-full max-w-[1160px] mx-auto px-6 overflow-hidden"
+          className={`w-full max-w-[1160px] mx-auto px-6 overflow-hidden transition-all duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+            featureVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-10 opacity-0 scale-[0.98]'
+          }`}
         >
           <div
             className="flex transition-transform duration-[450ms] ease-[cubic-bezier(0.25,1,0.5,1)]"
@@ -443,8 +462,8 @@ export function BudayaPage() {
         aria-labelledby="budaya-panduan"
       >
         <div
-          className={`flex flex-col md:flex-row justify-between items-start md:items-end gap-6 max-w-[1160px] mx-auto mb-16 transition-all duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
-            gridVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
+          className={`flex flex-col md:flex-row justify-between items-start md:items-end gap-6 max-w-[1160px] mx-auto mb-16 transition-all duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+            gridVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-10 opacity-0 scale-[0.98]'
           }`}
         >
           <div className="text-left">
@@ -466,7 +485,7 @@ export function BudayaPage() {
           <div className="hidden md:block w-[140px] h-[1.5px] bg-[#D4A853] mb-4 opacity-85" />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 max-w-[1300px] mx-auto w-full px-0">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 max-w-[1300px] mx-auto w-full place-items-center">
           {gridItems.map((item, idx) => (
             <GridCard key={item.title} item={item} index={idx} isVisible={gridVisible} />
           ))}
@@ -480,7 +499,7 @@ export function BudayaPage() {
       >
         <div
           className={`transition-all duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
-            footerVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+            footerVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-10 opacity-0 scale-[0.98]'
           }`}
         >
           <h2
@@ -524,43 +543,61 @@ function GridCard({
   return (
     <div
       className={[
-        'group relative w-full aspect-[413/552] overflow-hidden cursor-pointer',
-        'rounded-[24px] border-[1.5px] border-[#F9CE65] bg-[#2D0606]',
-        'transition-all duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02]',
-        isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0',
+        // Mobile: cap width & center; tablet+: fill column
+        'group relative w-full max-w-[380px] sm:max-w-none overflow-hidden cursor-pointer',
+        'border-[1.5px] border-[#F9CE65] bg-[#2D0606]',
+        'transition-all duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02]',
+        isVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-12 opacity-0 scale-[0.97]',
       ].join(' ')}
-      style={{ transitionDelay: `${index * 150}ms` }}
+      style={{
+        transitionDelay: `${index * 150}ms`,
+        // aspect ratio preserved inline for browser compat
+        aspectRatio: '413 / 552',
+        // Proportional border-radius: 24/413 = 5.81% (horizontal), 24/552 = 4.35% (vertical)
+        // This ensures CSS corners always match the SVG inner card corners at ANY size
+        borderRadius: '5.81% / 4.35%',
+      }}
     >
       {/*
-        Image fills card exactly (w-full h-full object-cover).
-        overflow-hidden + rounded-[24px] on the wrapper cleanly clips the SVG
-        drop-shadow padding so only the 413×552 artwork is visible.
+        SVG viewBox: 477×616. Inner card rect: x=32 y=24 w=413 h=552.
+        Offset formula (scales correctly with any container size):
+          width : 477/413 × 100% = 115.50%        (makes SVG 477-units wide)
+          left  : -32/413 × 100% = -7.75%          (% of container width)
+          top   : -24/552 × 100% = -4.35%          (% of container height)
+        overflow:hidden + proportional border-radius clips shadow cleanly.
       */}
       <img
         src={item.img}
         alt={item.title}
-        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+        className="absolute pointer-events-none select-none"
+        style={{
+          width: '115.5%',
+          height: 'auto',
+          top: '-4.35%',
+          left: '-7.75%',
+        }}
         loading="lazy"
+        draggable={false}
       />
 
-      {/* Burgundy gradient overlay — expands on hover to reveal description */}
+      {/* Burgundy gradient overlay — expands on hover */}
       <div
         className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#2D0606] via-[#2D0606]/85 to-transparent pointer-events-none transition-all duration-500 h-[35%] group-hover:h-[46%]"
-        style={{ borderRadius: '0 0 24px 24px' }}
+        style={{ borderRadius: '0 0 5.81% 5.81% / 0 0 4.35% 4.35%' }}
       />
 
       {/* Title — slides up on hover */}
       <h3
-        className="absolute left-[8%] right-[8%] font-cormorant italic text-white font-medium leading-tight select-none z-10 transition-all duration-500 bottom-[8%] group-hover:bottom-[23%]"
-        style={{ fontSize: 'clamp(16px, 2.3vw, 28px)' }}
+        className="absolute left-[8%] right-[8%] font-cormorant italic text-white font-semibold leading-tight select-none z-10 transition-all duration-500 bottom-[8%] group-hover:bottom-[24%]"
+        style={{ fontSize: 'clamp(15px, 2vw, 26px)' }}
       >
         {item.title}
       </h3>
 
       {/* Description — fades in on hover */}
       <p
-        className="absolute left-[8%] right-[8%] bottom-[7.5%] font-poppins italic text-white/90 leading-relaxed select-none z-10 transition-all duration-500 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0"
-        style={{ fontSize: 'clamp(10px, 1.1vw, 13px)' }}
+        className="absolute left-[8%] right-[8%] bottom-[7%] font-poppins italic text-white/85 leading-relaxed select-none z-10 transition-all duration-500 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0"
+        style={{ fontSize: 'clamp(11px, 1.3vw, 13.5px)' }}
       >
         {item.desc}
       </p>
