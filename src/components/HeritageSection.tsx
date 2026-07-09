@@ -1,8 +1,8 @@
-import imgSejarah from '../assets/11.svg';
-import imgBudaya from '../assets/12.svg';
-import imgKuliner from '../assets/13.svg';
-import imgPariwisata from '../assets/14.svg';
-import imgPeta from '../assets/15.svg';
+import imgSejarah from '../assets/11.webp';
+import imgBudaya from '../assets/12.webp';
+import imgKuliner from '../assets/13.webp';
+import imgPariwisata from '../assets/14.webp';
+import imgPeta from '../assets/15.webp';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 
 export function HeritageSection() {
@@ -49,30 +49,33 @@ export function HeritageSection() {
             {cards.slice(0, 3).map((card, idx) => (
               <div
                 key={card.title}
-                className={`relative transition-all duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02]
+                className={`relative overflow-hidden transition-all duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02]
                   w-[320px] h-[413px] sm:w-[370px] sm:h-[478px] md:w-[477px] md:h-[616px]`}
                 style={{
                   transitionDelay: `${idx * 150}ms`,
                   transform: isVisible ? 'translateY(0)' : 'translateY(40px)',
                   opacity: isVisible ? 1 : 0,
+                  borderRadius: '24px',
+                  border: '1.5px solid #F9CE65',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
                 }}
               >
                 <img
                   src={card.img}
                   alt={card.title}
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-cover select-none"
                   loading="lazy"
+                  draggable={false}
                 />
                 
-                {/* Precision Overlay & Title aligned perfectly with the inner 413x552 card of the SVG */}
+                {/* Burgundy gradient overlay at the bottom */}
                 <div className="absolute inset-0 pointer-events-none">
-                  {/* Burgundy gradient overlay at the bottom half of the inner image */}
                   <div 
-                    className="absolute left-[6.7%] right-[6.7%] bottom-[6.5%] h-[40%] bg-gradient-to-t from-[#6E1F1F] via-[#6E1F1F]/40 to-transparent pointer-events-none"
+                    className="absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-t from-[#6E1F1F] via-[#6E1F1F]/40 to-transparent pointer-events-none"
                     style={{ borderRadius: '0 0 24px 24px' }}
                   />
-                  {/* Title positioned inside the inner image area */}
-                  <h3 className="absolute bottom-[10%] left-[12%] font-corinthia text-white text-[56px] sm:text-[64px] md:text-[72px] font-bold leading-none select-none z-10">
+                  {/* Title */}
+                  <h3 className="absolute bottom-[8%] left-[8%] font-corinthia text-white text-[56px] sm:text-[64px] md:text-[72px] font-bold leading-none select-none z-10">
                     {card.title}
                   </h3>
                 </div>
@@ -85,30 +88,33 @@ export function HeritageSection() {
             {cards.slice(3, 5).map((card, idx) => (
               <div
                 key={card.title}
-                className={`relative transition-all duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02]
+                className={`relative overflow-hidden transition-all duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02]
                   w-[320px] h-[413px] sm:w-[370px] sm:h-[478px] md:w-[477px] md:h-[616px]`}
                 style={{
                   transitionDelay: `${(idx + 3) * 150}ms`,
                   transform: isVisible ? 'translateY(0)' : 'translateY(40px)',
                   opacity: isVisible ? 1 : 0,
+                  borderRadius: '24px',
+                  border: '1.5px solid #F9CE65',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
                 }}
               >
                 <img
                   src={card.img}
                   alt={card.title}
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-cover select-none"
                   loading="lazy"
+                  draggable={false}
                 />
                 
-                {/* Precision Overlay & Title aligned perfectly with the inner 413x552 card of the SVG */}
+                {/* Burgundy gradient overlay at the bottom */}
                 <div className="absolute inset-0 pointer-events-none">
-                  {/* Burgundy gradient overlay at the bottom half of the inner image */}
                   <div 
-                    className="absolute left-[6.7%] right-[6.7%] bottom-[6.5%] h-[40%] bg-gradient-to-t from-[#6E1F1F] via-[#6E1F1F]/40 to-transparent pointer-events-none"
+                    className="absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-t from-[#6E1F1F] via-[#6E1F1F]/40 to-transparent pointer-events-none"
                     style={{ borderRadius: '0 0 24px 24px' }}
                   />
-                  {/* Title positioned inside the inner image area */}
-                  <h3 className="absolute bottom-[10%] left-[12%] font-corinthia text-white text-[56px] sm:text-[64px] md:text-[72px] font-bold leading-none select-none z-10">
+                  {/* Title */}
+                  <h3 className="absolute bottom-[8%] left-[8%] font-corinthia text-white text-[56px] sm:text-[64px] md:text-[72px] font-bold leading-none select-none z-10">
                     {card.title}
                   </h3>
                 </div>

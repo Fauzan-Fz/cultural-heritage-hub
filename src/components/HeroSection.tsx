@@ -1,6 +1,6 @@
 import { siteContent } from '../data/stories';
 import { useScrollReveal } from '../hooks/useScrollReveal';
-import bgSvg from '../assets/bg.svg';
+import bgSvg from '../assets/bg.webp';
 import subSvg from '../assets/sub.svg';
 
 export function HeroSection() {
