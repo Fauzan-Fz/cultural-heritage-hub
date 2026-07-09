@@ -2,17 +2,17 @@ import { useState, useEffect, useRef } from 'react';
 import frameSvg from '../assets/frame.svg';
 import gadangSvg from '../assets/gadang.svg';
 import segitigaSvg from '../assets/segitiga.svg';
-import minNGSrc from '../assets/minNG.svg';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import budaya4kVideo from '../assets/Budaya 4k.mp4';
+import mapsSvg from '../assets/maps.svg';
 
 // Grid card images — Panduan Budaya section
-import grid1 from '../assets/01.png';
-import grid2 from '../assets/02.png';
-import grid3 from '../assets/03.png';
-import grid4 from '../assets/04.png';
-import grid5 from '../assets/05.png';
-import grid6 from '../assets/06.png';
+import grid1 from '../assets/01.webp';
+import grid2 from '../assets/02.webp';
+import grid3 from '../assets/03.webp';
+import grid4 from '../assets/04.webp';
+import grid5 from '../assets/05.webp';
+import grid6 from '../assets/06.webp';
 
 // Carousel slide images
 import rect2 from "../assets/Rectangle 1385 (2).svg";
@@ -349,7 +349,7 @@ export function BudayaPage() {
             {slides.map((slide) => (
               <article
                 key={slide.id}
-                className="w-full flex-shrink-0 flex flex-col md:flex-row gap-6 md:gap-10 items-start justify-start pl-1 pr-12 md:pr-24"
+                className="w-[108%] md:w-[112%] flex-shrink-0 flex flex-col md:flex-row gap-6 md:gap-10 items-start justify-start pl-1 pr-[8%] md:pr-[12%]"
               >
                 {/* ── LEFT Image ── */}
                 <img
@@ -458,37 +458,48 @@ export function BudayaPage() {
       {/* ── Panduan Budaya Grid Section ── */}
       <section
         ref={gridRef}
-        className="w-full px-6 pt-16 pb-16 md:pt-24 md:pb-24"
+        className="w-full px-4 md:px-6 pt-16 pb-20 md:pt-24 md:pb-28 flex justify-center"
         aria-labelledby="budaya-panduan"
       >
         <div
-          className={`flex flex-col md:flex-row justify-between items-start md:items-end gap-6 max-w-[1160px] mx-auto mb-16 transition-all duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          className={`w-full max-w-[1387px] md:min-h-[1608px] bg-[#652626] rounded-[40px] md:rounded-[64px] px-4 py-10 md:px-8 md:pt-14 md:pb-12 flex flex-col justify-start transition-all duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
             gridVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-10 opacity-0 scale-[0.98]'
           }`}
         >
-          <div className="text-left">
-            <h2
-              id="budaya-panduan"
-              className="font-corinthia font-bold leading-none inline-block border-b-2 border-[#D4A853] pb-1.5"
-              style={{ color: '#D4A853', fontSize: 'clamp(56px, 6.5vw, 96px)' }}
-            >
-              Panduan Budaya
-            </h2>
-            <p
-              className="font-cormorant font-medium uppercase tracking-[0.15em] mt-5 text-white"
-              style={{ fontSize: 'clamp(22px, 3.2vw, 48px)', lineHeight: 1.2 }}
-            >
-              KENALI BUDAYA SEBELUM BERKUNJUNG
-            </p>
+          {/* Guide Pill Button Container */}
+          <div className="w-full max-w-[1323px] mx-auto flex flex-col items-start mb-10 md:mb-12">
+            {/* Guide Pill Button */}
+            <div className="inline-flex items-center gap-3.5 px-8 py-3.5 rounded-full border-[1.5px] border-[#F9CE65] text-white font-poppins font-semibold tracking-[0.2em] text-[13px] sm:text-[14px] uppercase select-none">
+              <img src={mapsSvg} alt="Guide Icon" className="w-4.5 h-4.5 sm:w-5 sm:h-5 object-contain brightness-0 invert opacity-100" />
+              <span className="leading-none mt-[1px]">GUIDE</span>
+            </div>
           </div>
-          {/* Gold line on the right side from the mockup */}
-          <div className="hidden md:block w-[140px] h-[1.5px] bg-[#D4A853] mb-4 opacity-85" />
-        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 max-w-[1300px] mx-auto w-full place-items-center">
-          {gridItems.map((item, idx) => (
-            <GridCard key={item.title} item={item} index={idx} isVisible={gridVisible} />
-          ))}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 w-full max-w-[1323px] mx-auto mb-16">
+            <div className="text-left">
+              <h2
+                id="budaya-panduan"
+                className="font-corinthia font-bold leading-none inline-block border-b-2 border-[#D4A853] pb-1.5"
+                style={{ color: '#D4A853', fontSize: 'clamp(64px, 7vw, 104px)' }}
+              >
+                Panduan Budaya
+              </h2>
+              <p
+                className="font-cormorant font-medium uppercase tracking-[0.15em] mt-5 text-white"
+                style={{ fontSize: 'clamp(20px, 2.4vw, 34px)', lineHeight: 1.2 }}
+              >
+                KENALI BUDAYA SEBELUM BERKUNJUNG
+              </p>
+            </div>
+            {/* Gold line on the right side from the mockup */}
+            <div className="hidden md:block w-[140px] h-[1.5px] bg-[#D4A853] mb-4 opacity-85" />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-[1323px] mx-auto place-items-center mt-auto mb-auto">
+            {gridItems.map((item, idx) => (
+              <GridCard key={item.title} item={item} index={idx} isVisible={gridVisible} />
+            ))}
+          </div>
         </div>
       </section>
 
@@ -503,26 +514,26 @@ export function BudayaPage() {
           }`}
         >
           <h2
-            className="font-corinthia font-bold leading-none select-none whitespace-nowrap overflow-visible"
-            style={{ color: '#FFFFFF', fontSize: 'clamp(32px, 3.5vw, 52px)' }}
+            className="font-corinthia font-bold leading-none select-none whitespace-normal md:whitespace-nowrap overflow-visible"
+            style={{ color: '#FFFFFF', fontSize: 'clamp(28px, 3.5vw, 52px)' }}
           >
-            "Adat Basandi Syarak, Syarak Basandi Kitabullah"
+            "Adat Basandi Syarak,<br className="block md:hidden" /> Syarak Basandi Kitabullah"
           </h2>
           <div
             className="mx-auto mt-5 mb-5"
             style={{ width: 64, height: '1px', background: '#D4A853', opacity: 0.55 }}
           />
           <p
-            className="font-poppins italic text-white leading-relaxed max-w-2xl mx-auto"
-            style={{ fontSize: 'clamp(12px, 1.3vw, 15px)' }}
+            className="font-poppins italic text-white/80 leading-relaxed max-w-2xl mx-auto px-4 md:px-0"
+            style={{ fontSize: 'clamp(13px, 1.4vw, 15px)' }}
           >
             Falsafah yang menjadi landasan utama kehidupan masyarakat Minangkabau. Nilai-nilai adat dijalankan selaras dengan ajaran agama, sehingga budaya dan spiritualitas berjalan berdampingan dalam kehidupan sehari-hari.
           </p>
           <div className="mt-8 flex items-center justify-center">
             <img
-              src={minNGSrc}
-              alt="Ornamen Minangkabau"
-              className="h-4 sm:h-5 w-auto object-contain brightness-[1.8] opacity-70"
+              src={segitigaSvg}
+              alt="Ornamen Segitiga"
+              className="h-4 w-auto object-contain opacity-75"
             />
           </div>
         </div>
@@ -543,8 +554,8 @@ function GridCard({
   return (
     <div
       className={[
-        // Mobile: cap width & center; tablet+: fill column
-        'group relative w-full max-w-[380px] sm:max-w-none overflow-hidden cursor-pointer',
+        // Mobile: cap width at 380px; tablet/desktop: cap at exactly 425px (larger cards)
+        'group relative w-full max-w-[380px] sm:max-w-[425px] overflow-hidden cursor-pointer',
         'border-[1.5px] border-[#F9CE65] bg-[#2D0606]',
         'transition-all duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02]',
         isVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-12 opacity-0 scale-[0.97]',
@@ -553,9 +564,9 @@ function GridCard({
         transitionDelay: `${index * 150}ms`,
         // aspect ratio preserved inline for browser compat
         aspectRatio: '413 / 552',
-        // Proportional border-radius: 24/413 = 5.81% (horizontal), 24/552 = 4.35% (vertical)
-        // This ensures CSS corners always match the SVG inner card corners at ANY size
-        borderRadius: '5.81% / 4.35%',
+        // Proportional border-radius matching request:
+        // Top-left and bottom-right are rounded (5.81% / 4.35%), top-right and bottom-left are sharp (0px)
+        borderRadius: '5.81% 0 5.81% 0 / 4.35% 0 4.35% 0',
       }}
     >
       {/*
@@ -565,25 +576,26 @@ function GridCard({
           left  : -32/413 × 100% = -7.75%          (% of container width)
           top   : -24/552 × 100% = -4.35%          (% of container height)
         overflow:hidden + proportional border-radius clips shadow cleanly.
+        max-w-none is critical to override Tailwind's default max-width: 100% on img tags.
       */}
       <img
         src={item.img}
         alt={item.title}
-        className="absolute pointer-events-none select-none"
+        className="absolute pointer-events-none select-none max-w-none"
         style={{
-          width: '115.5%',
+          width: '120.0%',
           height: 'auto',
-          top: '-4.35%',
-          left: '-7.75%',
+          top: '-6.00%',
+          left: '-9.50%',
         }}
         loading="lazy"
         draggable={false}
       />
 
-      {/* Burgundy gradient overlay — expands on hover */}
+      {/* Burgundy gradient overlay — expands on hover (rounded only on bottom-right) */}
       <div
         className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#2D0606] via-[#2D0606]/85 to-transparent pointer-events-none transition-all duration-500 h-[35%] group-hover:h-[46%]"
-        style={{ borderRadius: '0 0 5.81% 5.81% / 0 0 4.35% 4.35%' }}
+        style={{ borderRadius: '0 0 5.81% 0 / 0 0 4.35% 0' }}
       />
 
       {/* Title — slides up on hover */}

@@ -29,10 +29,12 @@ export function HeroSection() {
       <div className="absolute inset-x-0 top-0 h-[720px] sm:h-[760px] overflow-hidden bg-white">
         <img
           src={bgSvg}
-          alt="Pemandangan pegunungan Bukittinggi saat fajar"
-          className="absolute inset-0 h-full w-full object-cover"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover select-none pointer-events-none"
           fetchPriority="high"
           decoding="sync"
+          draggable={false}
         />
       </div>
 
@@ -100,7 +102,8 @@ export function HeroSection() {
           <img
             src={subSvg}
             alt="Bukittinggi Heritage"
-            className="h-auto w-full object-contain filter drop-shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
+            className="h-auto w-full object-contain filter drop-shadow-[0_4px_16px_rgba(0,0,0,0.35)] select-none"
+            draggable={false}
           />
         </div>
 

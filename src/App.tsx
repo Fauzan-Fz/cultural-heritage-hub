@@ -38,11 +38,13 @@ function App() {
               >
                 <img
                   src={menaraSvg}
-                  alt="Jam Gadang Bukittinggi"
-                  className="h-[90%] w-auto max-w-none object-contain object-left-bottom drop-shadow-[0_25px_60px_rgba(0,0,0,0.18)]"
+                  alt=""
+                  aria-hidden="true"
+                  className="h-[90%] w-auto max-w-none object-contain object-left-bottom drop-shadow-[0_25px_60px_rgba(0,0,0,0.18)] select-none"
                   fetchPriority="high"
                   loading="eager"
                   decoding="sync"
+                  draggable={false}
                 />
               </div>
 
