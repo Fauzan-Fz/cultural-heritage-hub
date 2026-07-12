@@ -178,6 +178,57 @@ export function BudayaPage() {
   const [activeProgress, setActiveProgress] = useState(0);
   const activeProgressRef = useRef(0);
 
+  // Touch swipe states
+  const touchStartRef = useRef({ x: 0, y: 0, progress: 0 });
+  const isSwipingRef = useRef(false);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    if (!touch) return;
+    touchStartRef.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+      progress: activeProgressRef.current,
+    };
+    isSwipingRef.current = false;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    const start = touchStartRef.current;
+    if (!touch || !start) return;
+
+    const deltaX = start.x - touch.clientX;
+    const deltaY = start.y - touch.clientY;
+
+    if (!isSwipingRef.current && Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 8) {
+      isSwipingRef.current = true;
+    }
+
+    if (isSwipingRef.current) {
+      if (e.cancelable) {
+        e.preventDefault();
+      }
+      const container = containerRef.current;
+      const width = container?.offsetWidth || window.innerWidth;
+      const swipeSensitivity = 1.05;
+      const target = Math.max(
+        0,
+        Math.min(slides.length - 1, start.progress + (deltaX / width) * swipeSensitivity)
+      );
+      activeProgressRef.current = target;
+      setActiveProgress(target);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (isSwipingRef.current) {
+      const target = Math.max(0, Math.min(slides.length - 1, Math.round(activeProgressRef.current)));
+      activeProgressRef.current = target;
+      setActiveProgress(target);
+    }
+  };
+
   /**
    * Continuous Wheel-event scroll-lock:
    * Translates slides continuously based on wheel velocity.
@@ -288,14 +339,14 @@ export function BudayaPage() {
         />
 
         <div
-          className={`relative z-30 flex flex-col items-center justify-end text-center px-6 pb-20 md:pb-28 transition-all duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          className={`relative z-30 flex flex-col items-center justify-end text-center w-full px-6 pb-20 md:pb-28 transition-all duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
             heroVisible ? 'translate-y-0 opacity-100 scale-100 blur-none' : 'translate-y-10 opacity-0 scale-[0.98] blur-[3px]'
           }`}
           style={{ minHeight: '100svh' }}
         >
           <h1
             id="budaya-heading"
-            className="font-cormorant font-bold uppercase leading-none tracking-[0.05em] mb-4"
+            className="font-cormorant font-bold uppercase leading-none tracking-[0.05em] mb-4 w-full"
             style={{ fontSize: 'clamp(28px, 4.5vw, 52px)' }}
           >
             <span className="text-white">WARISAN </span>
@@ -313,7 +364,7 @@ export function BudayaPage() {
           />
 
           <p
-            className="font-cormorant italic text-white/85 max-w-lg mx-auto leading-relaxed mb-8"
+            className="font-cormorant italic text-white/85 max-w-lg mx-auto leading-relaxed mb-8 w-full"
             style={{ fontSize: 'clamp(14px, 1.6vw, 17px)' }}
           >
             "Menelusuri tradisi, seni dan filsafat hidup yang telah membentuk identitas Minangkabau
@@ -345,6 +396,9 @@ export function BudayaPage() {
           <div
             className="flex transition-transform duration-[450ms] ease-[cubic-bezier(0.25,1,0.5,1)]"
             style={{ transform: `translateX(-${activeProgress * 100}%)` }}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           >
             {slides.map((slide) => (
               <article
@@ -462,12 +516,12 @@ export function BudayaPage() {
         aria-labelledby="budaya-panduan"
       >
         <div
-          className={`w-full max-w-[1387px] md:min-h-[1608px] bg-[#652626] rounded-[40px] md:rounded-[64px] px-4 py-10 md:px-8 md:pt-14 md:pb-12 flex flex-col justify-start transition-all duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          className={`w-full max-w-[1387px] bg-[#652626] rounded-[40px] md:rounded-[64px] px-4 py-8 md:px-8 md:pt-10 md:pb-8 flex flex-col justify-start transition-all duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
             gridVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-10 opacity-0 scale-[0.98]'
           }`}
         >
           {/* Guide Pill Button Container */}
-          <div className="w-full max-w-[1323px] mx-auto flex flex-col items-start mb-10 md:mb-12">
+          <div className="w-full max-w-[1323px] mx-auto flex flex-col items-start mb-4 md:mb-5">
             {/* Guide Pill Button */}
             <div className="inline-flex items-center gap-3.5 px-8 py-3.5 rounded-full border-[1.5px] border-[#F9CE65] text-white font-poppins font-semibold tracking-[0.2em] text-[13px] sm:text-[14px] uppercase select-none">
               <img src={mapsSvg} alt="Guide Icon" className="w-4.5 h-4.5 sm:w-5 sm:h-5 object-contain brightness-0 invert opacity-100" />
@@ -475,17 +529,17 @@ export function BudayaPage() {
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 w-full max-w-[1323px] mx-auto mb-16">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 w-full max-w-[1323px] mx-auto mb-3 md:mb-4">
             <div className="text-left">
               <h2
                 id="budaya-panduan"
-                className="font-corinthia font-bold leading-none inline-block border-b-2 border-[#D4A853] pb-1.5"
+                className="font-corinthia font-bold leading-none inline-block border-b-2 border-[#D4A853] pb-1"
                 style={{ color: '#D4A853', fontSize: 'clamp(64px, 7vw, 104px)' }}
               >
                 Panduan Budaya
               </h2>
               <p
-                className="font-cormorant font-medium uppercase tracking-[0.15em] mt-5 text-white"
+                className="font-cormorant font-medium uppercase tracking-[0.15em] mt-2.5 text-white"
                 style={{ fontSize: 'clamp(20px, 2.4vw, 34px)', lineHeight: 1.2 }}
               >
                 KENALI BUDAYA SEBELUM BERKUNJUNG
@@ -495,9 +549,13 @@ export function BudayaPage() {
             <div className="hidden md:block w-[140px] h-[1.5px] bg-[#D4A853] mb-4 opacity-85" />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-[1323px] mx-auto place-items-center mt-auto mb-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-[1323px] mx-auto mt-0 mb-0">
             {gridItems.map((item, idx) => (
-              <GridCard key={item.title} item={item} index={idx} isVisible={gridVisible} />
+              <div key={item.title} className="flex justify-center sm:block">
+                <div className="w-full max-w-[420px] sm:max-w-none">
+                  <GridCard item={item} index={idx} isVisible={gridVisible} />
+                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -551,37 +609,29 @@ function GridCard({
   index: number;
   isVisible: boolean;
 }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
     <div
       className={[
-        // Mobile: cap width at 380px; tablet/desktop: cap at exactly 425px (larger cards)
-        'group relative w-full max-w-[380px] sm:max-w-[425px] overflow-hidden cursor-pointer',
+        'group relative w-full overflow-hidden cursor-pointer select-none',
         'border-[1.5px] border-[#F9CE65] bg-[#2D0606]',
         'transition-all duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02]',
         isVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-12 opacity-0 scale-[0.97]',
+        mobileOpen ? 'mobile-active' : '',
       ].join(' ')}
       style={{
         transitionDelay: `${index * 150}ms`,
-        // aspect ratio preserved inline for browser compat
         aspectRatio: '413 / 552',
-        // Proportional border-radius matching request:
-        // Top-left and bottom-right are rounded (5.81% / 4.35%), top-right and bottom-left are sharp (0px)
         borderRadius: '5.81% 0 5.81% 0 / 4.35% 0 4.35% 0',
       }}
+      onClick={() => setMobileOpen((v) => !v)}
     >
-      {/*
-        SVG viewBox: 477×616. Inner card rect: x=32 y=24 w=413 h=552.
-        Offset formula (scales correctly with any container size):
-          width : 477/413 × 100% = 115.50%        (makes SVG 477-units wide)
-          left  : -32/413 × 100% = -7.75%          (% of container width)
-          top   : -24/552 × 100% = -4.35%          (% of container height)
-        overflow:hidden + proportional border-radius clips shadow cleanly.
-        max-w-none is critical to override Tailwind's default max-width: 100% on img tags.
-      */}
+      {/* Background photo */}
       <img
         src={item.img}
         alt={item.title}
-        className="absolute pointer-events-none select-none max-w-none"
+        className="absolute pointer-events-none select-none max-w-none transition-transform duration-700 ease-out group-hover:scale-[1.04]"
         style={{
           width: '120.0%',
           height: 'auto',
@@ -592,29 +642,68 @@ function GridCard({
         draggable={false}
       />
 
-      {/* Burgundy gradient overlay — expands on hover (rounded only on bottom-right) */}
+      {/* ── Resting Gradient Overlay: matching #652626 background but transparent enough to see the photo ── */}
       <div
-        className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#2D0606] via-[#2D0606]/85 to-transparent pointer-events-none transition-all duration-500 h-[35%] group-hover:h-[46%]"
-        style={{ borderRadius: '0 0 5.81% 0 / 0 0 4.35% 0' }}
+        className="absolute inset-x-0 bottom-0 pointer-events-none transition-opacity duration-500"
+        style={{
+          height: '42%',
+          background: 'linear-gradient(to top, rgba(101, 38, 38, 0.85) 0%, rgba(101, 38, 38, 0.45) 50%, transparent 100%)',
+          borderRadius: '0 0 5.81% 0 / 0 0 4.35% 0',
+        }}
       />
 
-      {/* Title — slides up on hover */}
-      <h3
-        className="absolute left-[8%] right-[8%] font-cormorant italic text-white font-semibold leading-tight select-none z-10 transition-all duration-500 bottom-[8%] group-hover:bottom-[24%]"
-        style={{ fontSize: 'clamp(15px, 2vw, 26px)' }}
-      >
-        {item.title}
-      </h3>
+      {/* ── Active Gradient Overlay: deeper, but still transparent to reveal photo details ── */}
+      <div
+        className="absolute inset-x-0 bottom-0 pointer-events-none transition-opacity duration-500 opacity-0 group-hover:opacity-100 group-[.mobile-active]:opacity-100"
+        style={{
+          height: '56%',
+          background: 'linear-gradient(to top, rgba(101, 38, 38, 0.95) 0%, rgba(101, 38, 38, 0.82) 25%, rgba(101, 38, 38, 0.4) 65%, transparent 100%)',
+          borderRadius: '0 0 5.81% 0 / 0 0 4.35% 0',
+        }}
+      />
 
-      {/* Description — fades in on hover */}
-      <p
-        className="absolute left-[8%] right-[8%] bottom-[7%] font-poppins italic text-white/85 leading-relaxed select-none z-10 transition-all duration-500 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0"
-        style={{ fontSize: 'clamp(11px, 1.3vw, 13.5px)' }}
-      >
-        {item.desc}
-      </p>
+      {/* ── Content: Title + Gold Line + Description stacked inside one flex container ── */}
+      <div className="absolute inset-x-[8%] bottom-[7%] z-10 flex flex-col items-start text-left pointer-events-none w-[84%]">
+        
+        {/* Title — Cormorant Garamond Bold Italic */}
+        <h3
+          className="font-cormorant font-bold italic text-white leading-tight"
+          style={{ fontSize: 'clamp(20px, 3.2vw, 30px)' }}
+        >
+          {item.title}
+        </h3>
+
+        {/* Revealed Divider & Description Container */}
+        <div
+          className={[
+            'transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] w-full flex flex-col items-start',
+            'max-h-0 opacity-0 overflow-hidden mt-0',
+            'group-hover:max-h-[160px] group-hover:opacity-100 group-hover:mt-[3%]',
+            'group-[.mobile-active]:max-h-[160px] group-[.mobile-active]:opacity-100 group-[.mobile-active]:mt-[3%]',
+          ].join(' ')}
+        >
+          {/* Gold divider line (tight to title) */}
+          <div
+            className="h-[1.5px] bg-[#D4A853] w-[50%] mb-[3.5%]"
+          />
+
+          {/* Description — Poppins Regular */}
+          <p
+            className="font-poppins font-normal text-white/95 leading-relaxed"
+            style={{ fontSize: 'clamp(11.5px, 1.4vw, 13.5px)' }}
+          >
+            {item.desc}
+          </p>
+
+          {/* Mobile hint */}
+          <span className="md:hidden block mt-[4%] text-[9px] font-poppins text-white/30 tracking-widest uppercase">
+            (Ketuk untuk tutup)
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
 
 export default BudayaPage;
+

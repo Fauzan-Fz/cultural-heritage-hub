@@ -88,28 +88,29 @@ export function HeroSection() {
           className={`font-cormorant text-[18px] sm:text-[20px] md:text-[24px] font-bold italic tracking-widest text-white/90 mb-4 transition-all duration-[1200ms] delay-100 ease-[cubic-bezier(0.16,1,0.3,1)] ${
             isVisible ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0'
           }`}
-          style={{ textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}
+          style={{ textShadow: '0 2px 10px rgba(0,0,0,0.3)', width: '100%' }}
         >
           {hero.eyebrow}
         </p>
 
-        {/* Logo Text: sub.svg */}
+        {/* Logo Text: sub.svg — centered strictly on all screen sizes */}
         <div
-          className={`mb-8 max-w-[280px] sm:max-w-[340px] md:max-w-[440px] transition-all duration-[1200ms] delay-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          className={`mb-8 w-full flex justify-center transition-all duration-[1200ms] delay-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${
             isVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-3 opacity-0 scale-95'
           }`}
         >
           <img
             src={subSvg}
             alt="Bukittinggi Heritage"
-            className="h-auto w-full object-contain filter drop-shadow-[0_4px_16px_rgba(0,0,0,0.35)] select-none"
+            className="h-auto object-contain filter drop-shadow-[0_4px_16px_rgba(0,0,0,0.35)] select-none"
+            style={{ width: 'clamp(220px, 60vw, 440px)' }}
             draggable={false}
           />
         </div>
 
         {/* Tagline */}
         <h1
-          className={`max-w-[900px] font-cormorant text-[14px] sm:text-[18px] md:text-[22px] font-bold tracking-[0.22em] text-white/95 transition-all duration-[1200ms] delay-300 ease-[cubic-bezier(0.16,1,0.3,1)] [text-shadow:0_4px_16px_rgba(0,0,0,0.55)] ${
+          className={`w-full max-w-[900px] font-cormorant text-[13px] sm:text-[18px] md:text-[22px] font-bold tracking-[0.2em] text-white/95 transition-all duration-[1200ms] delay-300 ease-[cubic-bezier(0.16,1,0.3,1)] [text-shadow:0_4px_16px_rgba(0,0,0,0.55)] ${
             isVisible ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0'
           }`}
         >
